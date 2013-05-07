@@ -3,11 +3,11 @@
  * and open the template in the editor.
  */
 package royal.server;
-import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
+import royal.tracking.ThreadsMan;
 
 /*
  * A chat server that delivers public and private messages.
@@ -56,6 +56,7 @@ public class Server {
         for (i = 0; i < maxClientsCount; i++) {
           if (threads[i] == null) {
             (threads[i] = new ClientThread(clientSocket, threads)).start();
+           
             break;
           }
         }

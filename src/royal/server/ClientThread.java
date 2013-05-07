@@ -8,15 +8,16 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import royal.tracking.ThreadsMan;
 
 public class ClientThread extends Thread {
-
+    
   private DataInputStream is = null;
   private PrintStream os = null;
   private Socket clientSocket = null;
-  private final ClientThread[] threads;
+  public final ClientThread[] threads;
   private int maxClientsCount;
-
+private ThreadsMan threadsman = new ThreadsMan();
   public ClientThread(Socket clientSocket, ClientThread[] threads) {
     this.clientSocket = clientSocket;
     this.threads = threads;
@@ -27,20 +28,33 @@ public class ClientThread extends Thread {
     int maxClientsCount = this.maxClientsCount;
     ClientThread[] threads = this.threads;
 
+    
     try {
 
       is = new DataInputStream(clientSocket.getInputStream());
       os = new PrintStream(clientSocket.getOutputStream());
       os.println("Enter your name.");
       String name = is.readLine().trim();
+               
+          threadsman.setUserCount(name);
       os.println("Hello " + name
           + " to our chat room.\nTo leave enter /quit in a new line");
+          
+     
       for (int i = 0; i < maxClientsCount; i++) {
         if (threads[i] != null && threads[i] != this) {
           threads[i].os.println("*** A new user " + name
               + " entered the chat room !!! ***");
+          threads[i].setName(name);
+          
+      
+
+          
+          
+
         }
       }
+      
       while (true) {
         String line = is.readLine();
         if (line.startsWith("/quit")) {
