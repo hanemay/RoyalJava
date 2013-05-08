@@ -37,37 +37,27 @@ public class ThreadsMan {
            String[] temp = new String[users.length];
           
            if(users.length == 1){
-               System.out.println("user length første omgang" + users.length);
                users = new String[2];
-               System.out.println("user length anden omgang" + users.length);
                users[0] = k;
-               System.out.println("user[0] trdje length" + users.length );
            }
            else{
                int length = users.length + 1;
-               System.out.println("");
                String[] tempArray = new String[length];
                for(int i = 0; i < length; i++){
                    if(i < users.length - 1){
-                       System.out.println("Temp array = users[9]");
-                       tempArray[i] = users[i];
-                       
+                       tempArray[i] = users[i];                      
                    }
                    else{
-                       System.out.println("Temp array[i] = k ");
+
                        tempArray[i] = k;
                    }
-
                }
                    users = new String[length];
                    for(int i = 0; i < length - 1; i++){
                        System.out.println("Før ;" + users[i] +" nu: " + tempArray[i]);
                        users[i] = tempArray[i];
                    }
-           }
-           
-          
-           
+           }                              
           Server.count++;     
        }
 }
