@@ -17,7 +17,7 @@ public class ClientThread extends Thread {
   private Socket clientSocket = null;
   public final ClientThread[] threads;
   private int maxClientsCount;
-private ThreadsMan threadsman = new ThreadsMan();
+
   public ClientThread(Socket clientSocket, ClientThread[] threads) {
     this.clientSocket = clientSocket;
     this.threads = threads;
@@ -35,8 +35,8 @@ private ThreadsMan threadsman = new ThreadsMan();
       os = new PrintStream(clientSocket.getOutputStream());
       os.println("Enter your name.");
       String name = is.readLine().trim();
-               
-          threadsman.setUserCount(name);
+              ThreadsMan.setUserCount(name);
+      
       os.println("Hello " + name
           + " to our chat room.\nTo leave enter /quit in a new line");
           
