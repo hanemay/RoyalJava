@@ -4,8 +4,9 @@
  */
 package royal.tracking;
 
-import royal.server.ClientThread;
-import royal.server.Server;
+
+import royal.Server.Server;
+
 
 /**
  *
@@ -13,16 +14,18 @@ import royal.server.Server;
  */
 public class ThreadsMan {
     private int i;
-    public ClientThread[] threads;
+    public static int count = 0;
+    public  Server[] threads;
+            
   
     private static String[] users;
     public ThreadsMan(){
        
     }
-       public void setThreads(ClientThread[] k){
+       public void setThreads(Server[] k){
         this.threads[i] = k[i];
     }
-       public ClientThread[] getThreads(){
+       public Server[] getThreads(){
            return this.threads;
        }
        public String[] getUser(){
@@ -32,7 +35,7 @@ public class ThreadsMan {
        public static void setUserCount(String k){
         System.out.println("SetUsercount");
            if(users == null){
-               users = new String[Server.count];
+               users = new String[count];
            }
            String[] temp = new String[users.length];
           
@@ -58,7 +61,7 @@ public class ThreadsMan {
                        users[i] = tempArray[i];
                    }
            }                              
-          Server.count++;     
+          count++;     
        }
 }
 

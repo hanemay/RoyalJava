@@ -4,17 +4,14 @@
  */
 package royal.tracking;
 
-import royal.server.ClientThread;
+
 
 /**
  *
  * @author root
  */
 public class NewMain {
- public static ClientThread[] threads;
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String[] args) {
        ThreadsMan k = new ThreadsMan();
        String[] count = k.getUser();

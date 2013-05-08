@@ -7,7 +7,7 @@ import java.io.*;
  */
 public class Server extends Thread
 {
-	final static int _portNumber = 5559; //Arbitrary port number
+	final static int portNumber = 5559; //Arbitrary port number
  
 	public static void main(String[] args) 
 	{
@@ -25,58 +25,54 @@ public class Server extends Thread
 		boolean listening = true;
  
 		try {
-			serverSocket = new ServerSocket(_portNumber);
+			serverSocket = new ServerSocket(portNumber);
 		} catch (IOException e) {
-			System.err.println("Could not listen on port: " + _portNumber);
+			System.err.println("Could not listen on port: " + portNumber);
 			System.exit(-1);
 		}
  
 		while (listening) {
-			handleClientRequest(serverSocket);
-		}
- 
-		serverSocket.close();
-	}
- 
-	private void handleClientRequest(ServerSocket serverSocket) {
 		try {
-			new Server.ConnectionRequestHandler(serverSocket.accept()).run();
+			new Server.ConnectionRequestHandler(serverSocket.accept()).start();       
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+		}
  
-	/**
+		serverSocket.close();
+        }
+
+	/**state
 	 * Handles client connection requests. 
 	 */
-	public class ConnectionRequestHandler implements Runnable{
-		private Socket _socket = null;
-		private PrintWriter _out = null;
-		private BufferedReader _in = null;
+	public class ConnectionRequestHandler extends Thread implements Runnable {
+		private Socket socket = null;
+		private PrintWriter out = null;
+		private BufferedReader in = null;
  
 		public ConnectionRequestHandler(Socket socket) {
-			_socket = socket;
+			this.socket = socket;
 		}
  
 		public void run() {
-			System.out.println("Client connected to socket: " + _socket.toString());
+			System.out.println("Client connected to socket: " + socket.toString());
  
 			try {
-				_out = new PrintWriter(_socket.getOutputStream(), true);
-				_in = new BufferedReader(new InputStreamReader(_socket.getInputStream()));
+				out = new PrintWriter(socket.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
  
 				String inputLine, outputLine;
 				Server.BusinessLogic businessLogic = new Server.BusinessLogic();
 				outputLine = businessLogic.processInput(null);
-				_out.println(outputLine);
+				out.println(outputLine);
  
 				//Read from socket and write back the response to client. 
-				while ((inputLine = _in.readLine()) != null) {
+				while ((inputLine = in.readLine()) != null) {
 					outputLine = businessLogic.processInput(inputLine);
 					if(outputLine != null) {
-						_out.println(outputLine);
+						out.println(outputLine);
 						if (outputLine.equals("exit")) {
-							System.out.println("Server is closing socket for client:" + _socket.getLocalSocketAddress());
+							System.out.println("Server is closing socket for client:" + socket.getLocalSocketAddress());
 							break;
 						}
 					} else {
@@ -87,9 +83,9 @@ public class Server extends Thread
 				e.printStackTrace();
 			} finally { //In case anything goes wrong we need to close our I/O streams and sockets.
 				try {
-					_out.close();
-					_in.close();
-					_socket.close();
+					out.close();
+					in.close();
+					socket.close();
 				} catch(Exception e) { 
 					System.out.println("Couldn't close I/O streams");
 				}
@@ -101,11 +97,12 @@ public class Server extends Thread
 	/**
 	 * Handles business logic of application.
 	 */
-	public static class BusinessLogic {
+	public static class BusinessLogic extends Thread {
 		private static final int LoginUserName = 0;
 		private static final int LoginPassword = 1;
 		private static final int AuthenticateUser = 2;
 		private static final int AuthSuccess   = 3;
+                private static final int Ture   = 4;
  
 		private int state = LoginUserName;
  
@@ -120,6 +117,9 @@ public class Server extends Thread
 				}if(clientRequest != null && clientRequest.equalsIgnoreCase("exit")) {
 					return "exit";
 				}
+                                if(clientRequest != null && clientRequest.equalsIgnoreCase("ture")) {
+					state = Ture;
+				}       
  
 				if(state == LoginUserName) {
 					reply = "Please Enter your user name: ";
@@ -140,6 +140,9 @@ public class Server extends Thread
 				} else {
 					reply = "Invalid Request!!!";
 				}
+                                if(state == Ture){
+                                    reply = "TURE :-D :-D";
+                                }
 			} catch(Exception e) {
 				System.out.println("input process falied: " + e.getMessage());
 				return "exit";
