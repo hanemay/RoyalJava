@@ -4,6 +4,10 @@
  */
 package royal.tracking;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import royal.Server.dbConnection;
+
 
 
 /**
@@ -12,12 +16,23 @@ package royal.tracking;
  */
 public class NewMain {
 
-    public static void main(String[] args) {
-       ThreadsMan k = new ThreadsMan();
-       String[] count = k.getUser();
-       for(int i = 0; i < count.length; i++){
-           System.out.println(count[i].toString());
-       }
+    /**
+     *
+     * @param args
+     * @throws SQLException
+     */
+    public static void main(String[] args) throws SQLException {
+dbConnection k = new dbConnection();
+Connection con = k.connect("hanemay");
+k.validate("hanemay", "djkolort");
+
+
+
+        //ThreadsMan k = new ThreadsMan();
+       //String[] count = k.getUser();
+       //for(int i = 0; i < count.length; i++){
+         //  System.out.println(count[i].toString());
+       //}
     }
     
  
