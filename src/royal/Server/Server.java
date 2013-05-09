@@ -1,12 +1,15 @@
 package royal.Server;
 import java.net.*;
 import java.io.*;
+import java.sql.Connection;
+import royal.tracking.ThreadsMan;
  
 /**
  * Demo Server: Contains a multi-threaded socket server sample code.
  */
 public class Server extends Thread
 {
+    public static ThreadsMan tm = new ThreadsMan();
 	final static int portNumber = 5559; //Arbitrary port number
  
 	/**
@@ -40,8 +43,14 @@ public class Server extends Thread
 		}
  
 		while (listening) {
-		try {
-
+		try {try{
+                        String[] k = tm.getUser();
+                        for(int i = 0; i < k.length; i++){
+                        System.out.println(k[i]);
+                        }
+                }catch(NullPointerException e){
+                    
+                }
 			new Server.ConnectionRequestHandler(serverSocket.accept()).start();       
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -58,18 +67,20 @@ public class Server extends Thread
 		private Socket socket = null;
 		private PrintWriter out = null;
 		private BufferedReader in = null;
- 
+        
 		/**
              *
              * @param socket
              */
-            public ConnectionRequestHandler(Socket socket) {
+            public ConnectionRequestHandler(Socket socket){
+
 			this.socket = socket;
 		}
  
 		/**
              *
              */
+                @Override
             public void run() {
 			System.out.println("Client connected to socket: " + socket.toString());
  
@@ -131,6 +142,9 @@ public class Server extends Thread
              * @return
              */
             public String processInput(String clientRequest) {
+                        dbConnection k = new dbConnection();
+                        Connection con = k.connect();
+                        
 			String reply = null;
 			try {
 				if(clientRequest != null && clientRequest.equalsIgnoreCase("login")) {
@@ -151,8 +165,12 @@ public class Server extends Thread
 					state = AuthenticateUser;
 				} else if(state == AuthenticateUser) {
 					userPassword = clientRequest;
-					if(userName.equalsIgnoreCase("John") && userPassword.equals("doe")) { 
+boolean authenticated = false;
+					authenticated = k.getState(userName, userPassword);
+                                        System.out.println("STATE   = = = = = = =" + authenticated);
+                                        if(authenticated == true) { 
 						reply = "Login Successful...";
+                                                tm.setUserCount(userName);
 						state = AuthSuccess;
 					} else {
 						reply = "Invalid Credentials!!! Please try again. Enter you user name: ";

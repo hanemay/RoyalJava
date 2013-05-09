@@ -57,16 +57,18 @@ public class ThreadsMan {
      *
      * @param k
      */
-    public static void setUserCount(String k){
+    public void setUserCount(String k){
         System.out.println("SetUsercount");
            if(users == null){
-               users = new String[count];
+               users = new String[1];
+               
            }
            String[] temp = new String[users.length];
           
            if(users.length == 1){
                users = new String[2];
                users[0] = k;
+               System.out.println(users[0] + " added");
            }
            else{
                int length = users.length + 1;
@@ -84,6 +86,7 @@ public class ThreadsMan {
                    for(int i = 0; i < length - 1; i++){
                        System.out.println("Før ;" + users[i] +" nu: " + tempArray[i]);
                        users[i] = tempArray[i];
+                       System.out.print(users[i] + " is added");
                    }
            }                              
           count++;     

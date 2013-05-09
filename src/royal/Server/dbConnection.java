@@ -12,7 +12,7 @@ import java.sql.*;
 public class dbConnection{
     private static Connection conn;
     private static int userId = 0;
-    
+    private boolean authenticated = false;
     
 
 
@@ -22,7 +22,7 @@ public class dbConnection{
     public dbConnection() {
     }
 
-    private Connection con(String username){    
+    private Connection con(){    
         Connection conn = null;
         String url = "jdbc:mysql://localhost:3306/";
         String dbName = "Royal";
@@ -32,7 +32,7 @@ public class dbConnection{
         try {
         Class.forName(driver).newInstance();
         conn = DriverManager.getConnection(url+dbName,userName,password);
-        System.out.println(username + " succesfully connected to the db");    
+  
 
         this.conn = conn;
 
@@ -41,15 +41,33 @@ public class dbConnection{
         } 
         return conn;
     }
+    
+    public boolean getState(String username, String pw) throws SQLException{
+        validate(username,pw);
+        return authenticated;
+    }
     /**
      * 
      * @param username
      * @param pw 
-     * @throws SQLException 
+     * @throws SQLException authenthicated
      */
     public void validate(String username, String pw) throws SQLException{
-       boolean go = validateUsername(username);
-       boolean pwd = validatePassword(pw);
+       boolean go = false;
+        go = validateUsername(username);
+       System.out.println("USERNAME IS " + username);
+       boolean pwd = false;
+        pwd = validatePassword(pw);
+       System.out.println("PW IS " + pwd);
+       if(go != true )authenticated = false;
+       else {
+            if(pwd = true){
+            authenticated = true;
+            }
+            else{
+                authenticated = false;
+            }
+        }
     }
     
     /**
@@ -60,16 +78,19 @@ public class dbConnection{
      */
     private boolean validateUsername(String username) throws SQLException{
         boolean userNamevalidated = false;
-
-  Statement st = conn.createStatement();
-  ResultSet res;
+         Statement st = conn.createStatement();
+         ResultSet res;
         res = st.executeQuery("SELECT * FROM  Users WHERE username ='" + username+"'");
   System.out.println("Emp_code: " + "\t" + "Emp_name: ");
   while (res.next()) {
   userId = res.getInt("idUser");
   String s = res.getString("username");
-
+    if(s.equals(username)){
+        System.out.println(username);
+        userNamevalidated = true;
+    }
   }
+  
         return userNamevalidated;
     }
       private boolean validatePassword(String password) throws SQLException{
@@ -103,8 +124,8 @@ public class dbConnection{
      * @param userName
      * @return
      */
-    public Connection connect(String userName){
-       Connection conn = con(userName);
+    public Connection connect(){
+       Connection conn = con();
         return conn;
     }
 
