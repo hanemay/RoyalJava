@@ -14,25 +14,50 @@ import royal.Server.Server;
  */
 public class ThreadsMan {
     private int i;
+    /**
+     *
+     */
     public static int count = 0;
+    /**
+     *
+     */
     public  Server[] threads;
             
   
     private static String[] users;
+    /**
+     *
+     */
     public ThreadsMan(){
        
     }
-       public void setThreads(Server[] k){
+       /**
+     *
+     * @param k
+     */
+    public void setThreads(Server[] k){
         this.threads[i] = k[i];
     }
-       public Server[] getThreads(){
+       /**
+     *
+     * @return
+     */
+    public Server[] getThreads(){
            return this.threads;
        }
-       public String[] getUser(){
+       /**
+     *
+     * @return
+     */
+    public String[] getUser(){
            return this.users;
            
        }
-       public static void setUserCount(String k){
+       /**
+     *
+     * @param k
+     */
+    public static void setUserCount(String k){
         System.out.println("SetUsercount");
            if(users == null){
                users = new String[count];

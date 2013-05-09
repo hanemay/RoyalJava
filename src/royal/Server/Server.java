@@ -9,7 +9,11 @@ public class Server extends Thread
 {
 	final static int portNumber = 5559; //Arbitrary port number
  
-	public static void main(String[] args) 
+	/**
+     *
+     * @param args
+     */
+    public static void main(String[] args) 
 	{
 		try {
 			new Server().startServer();
@@ -20,7 +24,11 @@ public class Server extends Thread
  
 	}
  
-	public void startServer() throws Exception {
+	/**
+     *
+     * @throws Exception
+     */
+    public void startServer() throws Exception {
 		ServerSocket serverSocket = null;
 		boolean listening = true;
  
@@ -33,6 +41,7 @@ public class Server extends Thread
  
 		while (listening) {
 		try {
+
 			new Server.ConnectionRequestHandler(serverSocket.accept()).start();       
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -50,11 +59,18 @@ public class Server extends Thread
 		private PrintWriter out = null;
 		private BufferedReader in = null;
  
-		public ConnectionRequestHandler(Socket socket) {
+		/**
+             *
+             * @param socket
+             */
+            public ConnectionRequestHandler(Socket socket) {
 			this.socket = socket;
 		}
  
-		public void run() {
+		/**
+             *
+             */
+            public void run() {
 			System.out.println("Client connected to socket: " + socket.toString());
  
 			try {
@@ -109,7 +125,12 @@ public class Server extends Thread
 		private String userName =  null;
 		private String userPassword =  null;
  
-		public String processInput(String clientRequest) {
+		/**
+             *
+             * @param clientRequest
+             * @return
+             */
+            public String processInput(String clientRequest) {
 			String reply = null;
 			try {
 				if(clientRequest != null && clientRequest.equalsIgnoreCase("login")) {

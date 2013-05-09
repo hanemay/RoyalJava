@@ -6,8 +6,16 @@ package royal.Client;
 import java.io.*;
 import java.net.*;
  
+/**
+ *
+ * @author root
+ */
 public class Client{
-	public static void main(String[] args) {
+	/**
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
 		try {
 			new Client().startClient();
 		} catch (Exception e) {
@@ -16,7 +24,11 @@ public class Client{
 		}
 	}
  
-	public void startClient() throws IOException {
+	/**
+     *
+     * @throws IOException
+     */
+    public void startClient() throws IOException {
  
 		Socket socket = null;
 		PrintWriter out = null;
