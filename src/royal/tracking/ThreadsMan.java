@@ -42,6 +42,9 @@ public class ThreadsMan {
      *
      * @return
      */
+    public int getOnlineUsers(){
+    return count;
+}
     public Server[] getThreads(){
            return this.threads;
        }
@@ -60,13 +63,13 @@ public class ThreadsMan {
     public void setUserCount(String k){
         System.out.println("SetUsercount");
            if(users == null){
-               users = new String[1];
+               users = new String[0];
                
            }
            String[] temp = new String[users.length];
           
-           if(users.length == 1){
-               users = new String[2];
+           if(users.length < 1){
+               users = new String[1];
                users[0] = k;
                System.out.println(users[0] + " added");
            }
@@ -74,7 +77,7 @@ public class ThreadsMan {
                int length = users.length + 1;
                String[] tempArray = new String[length];
                for(int i = 0; i < length; i++){
-                   if(i < users.length - 1){
+                   if(i < users.length ){
                        tempArray[i] = users[i];                      
                    }
                    else{
@@ -83,7 +86,7 @@ public class ThreadsMan {
                    }
                }
                    users = new String[length];
-                   for(int i = 0; i < length - 1; i++){
+                   for(int i = 0; i < length; i++){
                        System.out.println("Før ;" + users[i] +" nu: " + tempArray[i]);
                        users[i] = tempArray[i];
                        System.out.print(users[i] + " is added");

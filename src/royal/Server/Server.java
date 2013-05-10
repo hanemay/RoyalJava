@@ -132,10 +132,10 @@ public class Server extends Thread
                 private static final int Ture   = 4;
  
 		private int state = LoginUserName;
- 
+                private int Admin = 5;
 		private String userName =  null;
 		private String userPassword =  null;
- 
+                private int getUsers = 6;
 		/**
              *
              * @param clientRequest
@@ -143,8 +143,7 @@ public class Server extends Thread
              */
             public String processInput(String clientRequest) {
                         dbConnection k = new dbConnection();
-                        Connection con = k.connect();
-                        
+                        Connection con = k.connect();                        
 			String reply = null;
 			try {
 				if(clientRequest != null && clientRequest.equalsIgnoreCase("login")) {
@@ -154,7 +153,13 @@ public class Server extends Thread
 				}
                                 if(clientRequest != null && clientRequest.equalsIgnoreCase("ture")) {
 					state = Ture;
-				}       
+				}      
+                               
+                                if(clientRequest != null && clientRequest.equalsIgnoreCase("getUsers")){
+                              
+                                    state = getUsers;
+                               
+                                }
  
 				if(state == LoginUserName) {
 					reply = "Please Enter your user name: ";
@@ -163,15 +168,20 @@ public class Server extends Thread
 					userName = clientRequest;
 					reply = "Please Enter your password: ";
 					state = AuthenticateUser;
+                                       
 				} else if(state == AuthenticateUser) {
 					userPassword = clientRequest;
-boolean authenticated = false;
+                                        boolean authenticated = false;
 					authenticated = k.getState(userName, userPassword);
                                         System.out.println("STATE   = = = = = = =" + authenticated);
                                         if(authenticated == true) { 
-						reply = "Login Successful...";
-                                                tm.setUserCount(userName);
+                                            reply = "Login Successful...";
+                                            tm.setUserCount(userName);
+                                            if(userName.equalsIgnoreCase("Admin")){
+                                            state = Admin;
+                                            }else{
 						state = AuthSuccess;
+                                                      }
 					} else {
 						reply = "Invalid Credentials!!! Please try again. Enter you user name: ";
 						state = LoginPassword;
@@ -179,6 +189,16 @@ boolean authenticated = false;
 				} else {
 					reply = "Invalid Request!!!";
 				}
+                                if(state == getUsers){
+                                    String[] users = tm.getUser();
+                                    String tempReply = "getUsers ";
+                                    for(int i = 0; i < users.length; i++){
+                                        tempReply += users[i] + " ";
+                                    }
+                                    state = Admin;
+                                    reply = tm.getOnlineUsers() + " " + tempReply;
+                                    
+                                }
                                 if(state == Ture){
                                     reply = "TURE :-D :-D";
                                 }
