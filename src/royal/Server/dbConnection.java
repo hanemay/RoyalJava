@@ -62,7 +62,7 @@ public class dbConnection{
        System.out.println("PW IS " + pwd);
        if(go != true )authenticated = false;
        else {
-            if(pwd = true){
+            if(pwd != false){
             authenticated = true;
             }
             else{
