@@ -190,15 +190,20 @@ public class Server extends Thread
 					reply = "Invalid Request!!!";
 				}
                                 if(state == getUsers){
+                                    if(userName.equalsIgnoreCase("Admin")){
                                     String[] users = tm.getUser();
+                                    String[] timeStamps = tm.getTimeStamp();
                                     String tempReply = "getUsers ";
                                     for(int i = 0; i < users.length; i++){
-                                        tempReply += users[i] + " ";
+                                        tempReply += users[i] + " " + timeStamps[i] +" ";
                                     }
                                     state = Admin;
                                     reply = tm.getOnlineUsers() + " " + tempReply;
-                                    
+                                    }else{
+                                        reply = "You shouldnt be able to parse this command, admin has been notified";
+                                    }
                                 }
+                                
                                 if(state == Ture){
                                     reply = "TURE :-D :-D";
                                 }

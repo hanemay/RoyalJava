@@ -120,9 +120,13 @@ public class ClientAdmin extends javax.swing.JFrame {
             Client k = new Client();
             Information info = k.startClient("Admin", "djkolort","getUsers");
             String[] users =  info.getUsers();
+            String[] timeStamps = info.getTimeLoggedIn();
             tblInfo.setValueAt(users[0], 0, 0);
+            tblInfo.setValueAt(timeStamps[0], 0, 2);
             tblInfo.setValueAt(users[1], 1, 0);
+            tblInfo.setValueAt(timeStamps [1], 1, 2);
             tblInfo.setValueAt(users[2], 2, 0);
+            tblInfo.setValueAt(timeStamps[2], 2, 2);
         } catch (IOException ex) {
             Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
