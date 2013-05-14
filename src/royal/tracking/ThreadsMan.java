@@ -5,6 +5,7 @@
 package royal.tracking;
 
 
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import royal.Server.Server;
@@ -25,7 +26,7 @@ public class ThreadsMan {
      */
     public  Server[] threads;
             
-  
+    private static Socket[] userSockets;
     private static String[] users;
     private static String[] timeLoggedIn;
     /**
@@ -59,6 +60,9 @@ public class ThreadsMan {
            return this.users;
            
        }
+    public Socket[] getSockets(){
+        return this.userSockets;
+    }
     public String[] getTimeStamp(){
         return timeLoggedIn;
     }
@@ -66,17 +70,78 @@ public class ThreadsMan {
         Calendar cal = Calendar.getInstance();
     	cal.getTime();
     	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        System.out.print("GETTING TIME");
     	return sdf.format(cal.getTime());
     }
+    public void logoff(Socket socket){
+        int arrayIndex;
+        String findSocket = socket.toString();
+        for(int i = 0; i < userSockets.length; i++){
+            if(userSockets[i].toString().equalsIgnoreCase(findSocket)){
+                System.out.println(users[i] + " loggede af med " + userSockets[i]);
+                arrayIndex = i;
+                removeInfo(arrayIndex);
+            }
+        }
+    }
+    private void removeInfo(int index){
+        boolean thisIndex = false;
+        int length = userSockets.length - 1 ;
+        String[] tempUsers = new String[length];
+        String[] tempTimeStamp = new String[length];
+        Socket[] tempSockets = new Socket[length];
+        for(int i = 0; i < userSockets.length - 1; i++){
+            if(i == index){
+                thisIndex = true;
+            }
+                tempUsers[i] = users[i];
+                tempTimeStamp[i] = timeLoggedIn[i];
+                tempSockets[i] = userSockets[i];
+                if(thisIndex == true){
+                    tempUsers[i] = users[i + 1];
+                    tempTimeStamp[i] = timeLoggedIn[i + 1];
+                    tempSockets[i] = userSockets[i + 1]; 
+                }
+                
+            }
+        }
+    }
+
     
        /**
      *
      * @param k
      */
+    public void setUserSockets(Socket k){        
+           if(userSockets == null){
+               userSockets = new Socket[0];
+
+           }          
+           if(userSockets.length < 1){
+               userSockets = new Socket[1];
+               userSockets[0] = k;
+
+               System.out.println(userSockets[0] + " added");
+           }
+           else{
+               int length = userSockets.length + 1;
+               Socket[] tempArray = new Socket[length];
+               for(int i = 0; i < length; i++){
+                   if(i < userSockets.length ){
+                       tempArray[i] = userSockets[i];                      
+                   }
+                   else{
+                       tempArray[i] = k;
+                   }
+               }
+                   userSockets = new Socket[length];
+                   for(int i = 0; i < length; i++){
+                       userSockets[i] = tempArray[i];
+                   }
+           }                               
+       }
+
     public void setUserCount(String k){
          String loggedInAt = getTime();
-        System.out.println("SetUsercount");
            if(users == null){
                users = new String[0];
                timeLoggedIn = new String[0];
@@ -105,10 +170,8 @@ public class ThreadsMan {
                    timeLoggedIn = new String[length];
                    users = new String[length];
                    for(int i = 0; i < length; i++){
-                       System.out.println("Før ;" + users[i] +" nu: " + tempArray[i]);
                        timeLoggedIn[i] = tempTimeStamp[i];
                        users[i] = tempArray[i];
-                       System.out.print(users[i] + " is added");
                    }
            }                              
           count++;     

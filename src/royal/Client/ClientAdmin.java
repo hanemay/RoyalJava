@@ -38,6 +38,7 @@ public class ClientAdmin extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         treeTrips = new javax.swing.JTree();
         update = new javax.swing.JButton();
+        update1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -81,18 +82,30 @@ public class ClientAdmin extends javax.swing.JFrame {
             }
         });
 
+        update1.setText("print sockets");
+        update1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                update1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(scrInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(71, 71, 71)
-                        .addComponent(update)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(71, 71, 71)
+                                .addComponent(update))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(98, 98, 98)
+                        .addComponent(update1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -105,7 +118,9 @@ public class ClientAdmin extends javax.swing.JFrame {
                         .addGap(231, 231, 231)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34)
-                        .addComponent(update))
+                        .addComponent(update)
+                        .addGap(73, 73, 73)
+                        .addComponent(update1))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -131,6 +146,17 @@ public class ClientAdmin extends javax.swing.JFrame {
             Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_updateActionPerformed
+
+    private void update1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_update1ActionPerformed
+          Client k = new Client();
+            Information info = null;
+        try {
+            info = k.startClient("Admin", "djkolort","getSockets");
+        } catch (IOException ex) {
+            Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            info.checkSockets();
+    }//GEN-LAST:event_update1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -174,5 +200,6 @@ public class ClientAdmin extends javax.swing.JFrame {
     public javax.swing.JTable tblInfo;
     private javax.swing.JTree treeTrips;
     private javax.swing.JButton update;
+    private javax.swing.JButton update1;
     // End of variables declaration//GEN-END:variables
 }

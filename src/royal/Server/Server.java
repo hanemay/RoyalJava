@@ -43,14 +43,7 @@ public class Server extends Thread
 		}
  
 		while (listening) {
-		try {try{
-                        String[] k = tm.getUser();
-                        for(int i = 0; i < k.length; i++){
-                        System.out.println(k[i]);
-                        }
-                }catch(NullPointerException e){
-                    
-                }
+		try {
 			new Server.ConnectionRequestHandler(serverSocket.accept()).start();       
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -73,7 +66,6 @@ public class Server extends Thread
              * @param socket
              */
             public ConnectionRequestHandler(Socket socket){
-
 			this.socket = socket;
 		}
  
@@ -90,15 +82,16 @@ public class Server extends Thread
  
 				String inputLine, outputLine;
 				Server.BusinessLogic businessLogic = new Server.BusinessLogic();
-				outputLine = businessLogic.processInput(null);
+				outputLine = businessLogic.processInput(null,socket);
 				out.println(outputLine);
  
 				//Read from socket and write back the response to client. 
 				while ((inputLine = in.readLine()) != null) {
-					outputLine = businessLogic.processInput(inputLine);
+					outputLine = businessLogic.processInput(inputLine,socket);
 					if(outputLine != null) {
 						out.println(outputLine);
 						if (outputLine.equals("exit")) {
+                                                        tm.logoff(socket);
 							System.out.println("Server is closing socket for client:" + socket.getLocalSocketAddress());
 							break;
 						}
@@ -130,7 +123,7 @@ public class Server extends Thread
 		private static final int AuthenticateUser = 2;
 		private static final int AuthSuccess   = 3;
                 private static final int Ture   = 4;
- 
+                private static final int getSockets = 10;
 		private int state = LoginUserName;
                 private int Admin = 5;
 		private String userName =  null;
@@ -141,7 +134,7 @@ public class Server extends Thread
              * @param clientRequest
              * @return
              */
-            public String processInput(String clientRequest) {
+            public String processInput(String clientRequest, Socket socket) {
                         dbConnection k = new dbConnection();
                         Connection con = k.connect();                        
 			String reply = null;
@@ -153,6 +146,9 @@ public class Server extends Thread
 				}
                                 if(clientRequest != null && clientRequest.equalsIgnoreCase("ture")) {
 					state = Ture;
+				}  
+                                if(clientRequest != null && clientRequest.equalsIgnoreCase("getSockets")) {
+					state = getSockets;
 				}      
                                
                                 if(clientRequest != null && clientRequest.equalsIgnoreCase("getUsers")){
@@ -173,10 +169,11 @@ public class Server extends Thread
 					userPassword = clientRequest;
                                         boolean authenticated = false;
 					authenticated = k.getState(userName, userPassword);
-                                        System.out.println("STATE   = = = = = = =" + authenticated);
                                         if(authenticated == true) { 
                                             reply = "Login Successful...";
                                             tm.setUserCount(userName);
+                                            tm.setUserSockets(socket);
+
                                             if(userName.equalsIgnoreCase("Admin")){
                                             state = Admin;
                                             }else{
@@ -203,7 +200,13 @@ public class Server extends Thread
                                         reply = "You shouldnt be able to parse this command, admin has been notified";
                                     }
                                 }
-                                
+                                if(state == getSockets){
+                                    Socket[] sockets = tm.getSockets();
+                                    reply = tm.getOnlineUsers() + " getSockets ";
+                                    for(int i = 0; i < sockets.length; i++){
+                                        reply += sockets[i].toString() + " ";
+                                    }
+                                }                               
                                 if(state == Ture){
                                     reply = "TURE :-D :-D";
                                 }

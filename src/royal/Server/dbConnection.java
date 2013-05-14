@@ -56,10 +56,8 @@ public class dbConnection{
     public void validate(String username, String pw) throws SQLException{
        boolean go = false;
         go = validateUsername(username);
-       System.out.println("USERNAME IS " + username);
        boolean pwd = false;
         pwd = validatePassword(pw);
-       System.out.println("PW IS " + pwd);
        if(go != true )authenticated = false;
        else {
             if(pwd != false){
@@ -82,43 +80,38 @@ public class dbConnection{
          Statement st = conn.createStatement();
          ResultSet res;
         res = st.executeQuery("SELECT * FROM  Users WHERE username ='" + username+"'");
-  System.out.println("Emp_code: " + "\t" + "Emp_name: ");
-  while (res.next()) {
-  userId = res.getInt("idUser");
-  String s = res.getString("username");
-    if(s.equals(username)){
-        System.out.println(username);
-        userNamevalidated = true;
-    }
-  }
+            while (res.next()) {
+            userId = res.getInt("idUser");
+            String s = res.getString("username");
+            if(s.equals(username)){
+               userNamevalidated = true;
+            }
+        }
   
         return userNamevalidated;
     }
-      private boolean validatePassword(String password) throws SQLException{
-          System.out.println(userId + " USER ID ID ID");
-      boolean truepw = false;
-      String tempPwd = null;
-      Statement st = conn.createStatement();
-      ResultSet res;
-            res = st.executeQuery("SELECT * FROM words WHERE idUser ='"+userId+"'");
-      while(res.next()){
-            tempPwd  = res.getString("pwd");
-             System.out.println("PASSWORD = " + tempPwd);
-      }
-     
-      if(password.equals(tempPwd)){
-          truepw = true;
-          System.out.println("pw er " + truepw);
-          return truepw;
-      }
-      else{
-          return truepw;
-      }
-  }
+    private boolean validatePassword(String password) throws SQLException{
+        boolean truepw = false;
+        String tempPwd = null;
+        Statement st = conn.createStatement();
+        ResultSet res;
+              res = st.executeQuery("SELECT * FROM words WHERE idUser ='"+userId+"'");
+        while(res.next()){
+              tempPwd  = res.getString("pwd");
+        }
+
+        if(password.equals(tempPwd)){
+            truepw = true;
+            return truepw;
+        }
+        else{
+            return truepw;
+        }
+    }
     private String[] returnCredentials(String username){
-       String[] credentials = new String[2];
-       credentials[0] = username;
-       return credentials;
+        String[] credentials = new String[2];
+        credentials[0] = username;
+        return credentials;
     }
     /**
      *
@@ -126,7 +119,7 @@ public class dbConnection{
      * @return
      */
     public Connection connect(){
-       Connection conn = con();
+        Connection conn = con();
         return conn;
     }
 
