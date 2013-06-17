@@ -49,6 +49,10 @@ public class ThreadsMan {
     public int getOnlineUsers(){
     return count;
 }
+    /**
+     *
+     * @return
+     */
     public Server[] getThreads(){
            return this.threads;
        }
@@ -60,9 +64,17 @@ public class ThreadsMan {
            return this.users;
            
        }
+    /**
+     *
+     * @return
+     */
     public Socket[] getSockets(){
         return this.userSockets;
     }
+    /**
+     *
+     * @return
+     */
     public String[] getTimeStamp(){
         return timeLoggedIn;
     }
@@ -72,6 +84,21 @@ public class ThreadsMan {
     	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     	return sdf.format(cal.getTime());
     }
+    /**
+     *
+     * @param tur 
+     * @return  
+     */
+    
+    public Ture tur(Ture tur){
+        
+        return tur;
+    }
+    
+    /**
+     *
+     * @param socket
+     */
     public void logoff(Socket socket){
         int arrayIndex;
         String findSocket = socket.toString();
@@ -100,11 +127,13 @@ public class ThreadsMan {
                     tempUsers[i] = users[i + 1];
                     tempTimeStamp[i] = timeLoggedIn[i + 1];
                     tempSockets[i] = userSockets[i + 1]; 
+                    count --;
                 }
+                
                 
             }
         }
-    }
+    
 
     
        /**
@@ -137,9 +166,22 @@ public class ThreadsMan {
                    for(int i = 0; i < length; i++){
                        userSockets[i] = tempArray[i];
                    }
-           }                               
+           }   
+          printSockets();
        }
+     /**
+     *
+     */
+    public void printSockets(){
+         for(int i = 0; i < users.length; i++){
+               System.out.print("brugernavn,id,socket" + users[i] + " " +i+" " + userSockets[i].toString());
+         }
+           }
 
+    /**
+     *
+     * @param k
+     */
     public void setUserCount(String k){
          String loggedInAt = getTime();
            if(users == null){
@@ -173,7 +215,8 @@ public class ThreadsMan {
                        timeLoggedIn[i] = tempTimeStamp[i];
                        users[i] = tempArray[i];
                    }
-           }                              
+           }  
+           
           count++;     
        }
 }

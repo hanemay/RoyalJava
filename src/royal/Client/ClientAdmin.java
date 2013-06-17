@@ -5,21 +5,25 @@
 package royal.Client;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import royal.Server.Server;
-import royal.tracking.ThreadsMan;
 
 /**
- *
- * @author root
+ * Vores gui som kører oven på client
+ * @author Niclas Bade
  */
 public class ClientAdmin extends javax.swing.JFrame {
-
+    private static Client mainClient = new Client();           
+    private static Information info = null;
+           
     /**
-     * Creates new form ClientAdmin
+     * Laver en ny for AdminClient
+     * @throws IOException 
      */
-    public ClientAdmin() {
+    public ClientAdmin() throws IOException {
+         mainClient.startClient("Admin", "djkolort");
         initComponents();
     }
 
@@ -34,16 +38,79 @@ public class ClientAdmin extends javax.swing.JFrame {
 
         scrInfo = new javax.swing.JScrollPane();
         tblInfo = new javax.swing.JTable();
-        jSeparator1 = new javax.swing.JSeparator();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        treeTrips = new javax.swing.JTree();
-        update = new javax.swing.JButton();
-        update1 = new javax.swing.JButton();
+        btnOpdaterBrugere = new javax.swing.JButton();
+        btnSendTur = new javax.swing.JButton();
+        btnHentTure = new javax.swing.JButton();
+        btnOpretTur = new javax.swing.JButton();
+        scrTure = new javax.swing.JScrollPane();
+        tblTure = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         tblInfo.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
@@ -63,102 +130,229 @@ public class ClientAdmin extends javax.swing.JFrame {
         });
         scrInfo.setViewportView(tblInfo);
 
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Royal Kure");
-        javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Aktive Ture");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Online Kurere");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Afsluttede Ture");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Forsinkede ture");
-        treeNode1.add(treeNode2);
-        treeTrips.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
-        jScrollPane2.setViewportView(treeTrips);
-
-        update.setText("set ture");
-        update.addActionListener(new java.awt.event.ActionListener() {
+        btnOpdaterBrugere.setText("Opdater Brugerliste");
+        btnOpdaterBrugere.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateActionPerformed(evt);
+                btnOpdaterBrugereActionPerformed(evt);
             }
         });
 
-        update1.setText("print sockets");
-        update1.addActionListener(new java.awt.event.ActionListener() {
+        btnSendTur.setText("send tur");
+        btnSendTur.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                update1ActionPerformed(evt);
+                btnSendTurActionPerformed(evt);
             }
         });
+
+        btnHentTure.setText("hent ture");
+        btnHentTure.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHentTureActionPerformed(evt);
+            }
+        });
+
+        btnOpretTur.setText("opret Tur");
+        btnOpretTur.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpretTurActionPerformed(evt);
+            }
+        });
+
+        tblTure.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Tur", "fra postnr", "til postnr", "tilhører kurer"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        scrTure.setViewportView(tblTure);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(scrInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnOpdaterBrugere)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(71, 71, 71)
-                                .addComponent(update))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(98, 98, 98)
-                        .addComponent(update1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnSendTur)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnHentTure)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnOpretTur)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(scrInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrTure, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scrInfo, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(231, 231, 231)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34)
-                        .addComponent(update)
-                        .addGap(73, 73, 73)
-                        .addComponent(update1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(scrInfo, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnOpdaterBrugere)
+                    .addComponent(btnSendTur)
+                    .addComponent(btnHentTure)
+                    .addComponent(btnOpretTur))
+                .addContainerGap())
+            .addComponent(scrTure, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateActionPerformed
-        try {
-            Client k = new Client();
-            Information info = k.startClient("Admin", "djkolort","getUsers");
-            String[] users =  info.getUsers();
-            String[] timeStamps = info.getTimeLoggedIn();
-            tblInfo.setValueAt(users[0], 0, 0);
-            tblInfo.setValueAt(timeStamps[0], 0, 2);
-            tblInfo.setValueAt(users[1], 1, 0);
-            tblInfo.setValueAt(timeStamps [1], 1, 2);
-            tblInfo.setValueAt(users[2], 2, 0);
-            tblInfo.setValueAt(timeStamps[2], 2, 2);
+    
+    private void btnOpdaterBrugereActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpdaterBrugereActionPerformed
+              try {             
+            mainClient.sendBesked("getUsers");
+            info = mainClient.info();
+            OnlineKlienter[] clients = info.getKlienter();
+            for(int i = 0; i < clients.length; i++){
+            tblInfo.setValueAt(clients[i].getBrugerNavn(), i, 0);
+            tblInfo.setValueAt(clients[i].getTidLoggetInd(), i, 2);
+              }
         } catch (IOException ex) {
             Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_updateActionPerformed
+    }//GEN-LAST:event_btnOpdaterBrugereActionPerformed
 
-    private void update1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_update1ActionPerformed
-          Client k = new Client();
-            Information info = null;
-        try {
-            info = k.startClient("Admin", "djkolort","getSockets");
-        } catch (IOException ex) {
+    private void btnSendTurActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendTurActionPerformed
+            info = mainClient.info();
+               try {
+                   mainClient.sendBesked("getUsers");
+               } catch (IOException ex) {
+                   Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
+               }
+           Ture[] tur = null;
+            OnlineKlienter[] clients = info.getKlienter();
+            int column = tblInfo.getSelectedColumn();
+            int row = tblInfo.getSelectedRow();
+            int columTur = tblTure.getSelectedColumn();
+            int rowTur = tblTure.getSelectedRow();
+            String  turNrString = tblTure.getValueAt(rowTur, 0).toString();
+            int turNr = Integer.parseInt(turNrString);
+            String selectedUserName = tblInfo.getValueAt(row, 0).toString();
+              royal.Client.dbConnection c = new royal.Client.dbConnection();
+                        Connection con = c.sqlForbindelse();
+               try {
+                   tur = c.setUfærdigeTure();
+               } catch (SQLException ex) {
+                   Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
+               }
+            for(int i = 0; i < clients.length; i++){
+                String tempUserName = clients[i].getBrugerNavn();
+                if(tempUserName.equals(selectedUserName)){
+                    System.out.println(selectedUserName);
+                         try {
+                    System.out.println("id er "+ i);
+                    ClientAdmin.mainClient.sendBesked("ture "+ i +" " + turNr);
+             } catch (IOException ex) {
             Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
-        }
-            info.checkSockets();
-    }//GEN-LAST:event_update1ActionPerformed
+            }
+                }
+            }            
+            
+   
+  
+    }//GEN-LAST:event_btnSendTurActionPerformed
+
+    private void btnHentTureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHentTureActionPerformed
+        royal.Client.dbConnection k = new royal.Client.dbConnection();
+                        Connection con = k.sqlForbindelse();    
+               try {
+                   Ture[] ture = k.setUfærdigeTure();
+                   for(int i = 0; i < ture.length-2; i ++){                      
+                      tblTure.setValueAt(i, i, 0);
+                      tblTure.setValueAt(ture[i].getafhentningsPostNr(), i, 1);
+                      tblTure.setValueAt(ture[i].getleveringsPostNr(), i, 2);
+                      tblTure.setValueAt(ture[i].getafhentningsKundeNavn(),i,3);
+                   }
+               } catch (SQLException ex) {
+                   Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
+               }
+    }//GEN-LAST:event_btnHentTureActionPerformed
+
+    private void btnOpretTurActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpretTurActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnOpretTurActionPerformed
 
     /**
+     * main operationen for vores gui
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -188,18 +382,22 @@ public class ClientAdmin extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
-                new ClientAdmin().setVisible(true);
+                try {
+                    new ClientAdmin().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(ClientAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JButton btnHentTure;
+    private javax.swing.JButton btnOpdaterBrugere;
+    private javax.swing.JButton btnOpretTur;
+    private javax.swing.JButton btnSendTur;
     public javax.swing.JScrollPane scrInfo;
+    private javax.swing.JScrollPane scrTure;
     public javax.swing.JTable tblInfo;
-    private javax.swing.JTree treeTrips;
-    private javax.swing.JButton update;
-    private javax.swing.JButton update1;
+    private javax.swing.JTable tblTure;
     // End of variables declaration//GEN-END:variables
 }

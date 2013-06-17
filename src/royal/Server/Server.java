@@ -1,18 +1,20 @@
 package royal.Server;
 import java.net.*;
 import java.io.*;
-import java.sql.Connection;
-import royal.tracking.ThreadsMan;
  
 /**
- * Demo Server: Contains a multi-threaded socket server sample code.
+ * Royal Kurer server tager input og output til clienter.
+ * @author Niclas Bade
  */
 public class Server extends Thread
 {
+    /**
+     * Threadmanager som serveren skal starte opnår den bliver startet den skal ikke  initialiseres i hver enkelt thread
+     */
     public static ThreadsMan tm = new ThreadsMan();
-	final static int portNumber = 5559; //Arbitrary port number
- 
-	/**
+    final static int portNumber = 5559; //portnummeret
+
+    /**
      *
      * @param args
      */
@@ -28,7 +30,7 @@ public class Server extends Thread
 	}
  
 	/**
-     *
+     * starter serveren smider en stacktrace ved fejl.
      * @throws Exception
      */
     public void startServer() throws Exception {
@@ -44,178 +46,11 @@ public class Server extends Thread
  
 		while (listening) {
 		try {
-			new Server.ConnectionRequestHandler(serverSocket.accept()).start();       
+			new ForbindelsesStyring(serverSocket.accept()).start();       
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		}
- 
 		serverSocket.close();
         }
-
-	/**state
-	 * Handles client connection requests. 
-	 */
-	public class ConnectionRequestHandler extends Thread implements Runnable {
-		private Socket socket = null;
-		private PrintWriter out = null;
-		private BufferedReader in = null;
-        
-		/**
-             *
-             * @param socket
-             */
-            public ConnectionRequestHandler(Socket socket){
-			this.socket = socket;
-		}
- 
-		/**
-             *
-             */
-                @Override
-            public void run() {
-			System.out.println("Client connected to socket: " + socket.toString());
- 
-			try {
-				out = new PrintWriter(socket.getOutputStream(), true);
-				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
- 
-				String inputLine, outputLine;
-				Server.BusinessLogic businessLogic = new Server.BusinessLogic();
-				outputLine = businessLogic.processInput(null,socket);
-				out.println(outputLine);
- 
-				//Read from socket and write back the response to client. 
-				while ((inputLine = in.readLine()) != null) {
-					outputLine = businessLogic.processInput(inputLine,socket);
-					if(outputLine != null) {
-						out.println(outputLine);
-						if (outputLine.equals("exit")) {
-                                                        tm.logoff(socket);
-							System.out.println("Server is closing socket for client:" + socket.getLocalSocketAddress());
-							break;
-						}
-					} else {
-						System.out.println("OutputLine is null!!!");
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally { //In case anything goes wrong we need to close our I/O streams and sockets.
-				try {
-					out.close();
-					in.close();
-					socket.close();
-				} catch(Exception e) { 
-					System.out.println("Couldn't close I/O streams");
-				}
-			}
-		}
- 
-	}
- 
-	/**
-	 * Handles business logic of application.
-	 */
-	public static class BusinessLogic extends Thread {
-		private static final int LoginUserName = 0;
-		private static final int LoginPassword = 1;
-		private static final int AuthenticateUser = 2;
-		private static final int AuthSuccess   = 3;
-                private static final int Ture   = 4;
-                private static final int getSockets = 10;
-		private int state = LoginUserName;
-                private int Admin = 5;
-		private String userName =  null;
-		private String userPassword =  null;
-                private int getUsers = 6;
-		/**
-             *
-             * @param clientRequest
-             * @return
-             */
-            public String processInput(String clientRequest, Socket socket) {
-                        dbConnection k = new dbConnection();
-                        Connection con = k.connect();                        
-			String reply = null;
-			try {
-				if(clientRequest != null && clientRequest.equalsIgnoreCase("login")) {
-					state = LoginPassword;
-				}if(clientRequest != null && clientRequest.equalsIgnoreCase("exit")) {
-					return "exit";
-				}
-                                if(clientRequest != null && clientRequest.equalsIgnoreCase("ture")) {
-					state = Ture;
-				}  
-                                if(clientRequest != null && clientRequest.equalsIgnoreCase("getSockets")) {
-					state = getSockets;
-				}      
-                               
-                                if(clientRequest != null && clientRequest.equalsIgnoreCase("getUsers")){
-                              
-                                    state = getUsers;
-                               
-                                }
- 
-				if(state == LoginUserName) {
-					reply = "Please Enter your user name: ";
-					state = LoginPassword;
-				} else if(state == LoginPassword) {
-					userName = clientRequest;
-					reply = "Please Enter your password: ";
-					state = AuthenticateUser;
-                                       
-				} else if(state == AuthenticateUser) {
-					userPassword = clientRequest;
-                                        boolean authenticated = false;
-					authenticated = k.getState(userName, userPassword);
-                                        if(authenticated == true) { 
-                                            reply = "Login Successful...";
-                                            tm.setUserCount(userName);
-                                            tm.setUserSockets(socket);
-
-                                            if(userName.equalsIgnoreCase("Admin")){
-                                            state = Admin;
-                                            }else{
-						state = AuthSuccess;
-                                                      }
-					} else {
-						reply = "Invalid Credentials!!! Please try again. Enter you user name: ";
-						state = LoginPassword;
-					}
-				} else {
-					reply = "Invalid Request!!!";
-				}
-                                if(state == getUsers){
-                                    if(userName.equalsIgnoreCase("Admin")){
-                                    String[] users = tm.getUser();
-                                    String[] timeStamps = tm.getTimeStamp();
-                                    String tempReply = "getUsers ";
-                                    for(int i = 0; i < users.length; i++){
-                                        tempReply += users[i] + " " + timeStamps[i] +" ";
-                                    }
-                                    state = Admin;
-                                    reply = tm.getOnlineUsers() + " " + tempReply;
-                                    }else{
-                                        reply = "You shouldnt be able to parse this command, admin has been notified";
-                                    }
-                                }
-                                if(state == getSockets){
-                                    Socket[] sockets = tm.getSockets();
-                                    reply = tm.getOnlineUsers() + " getSockets ";
-                                    for(int i = 0; i < sockets.length; i++){
-                                        reply += sockets[i].toString() + " ";
-                                    }
-                                }                               
-                                if(state == Ture){
-                                    reply = "TURE :-D :-D";
-                                }
-			} catch(Exception e) {
-				System.out.println("input process falied: " + e.getMessage());
-				return "exit";
-			}
- 
-			return reply;
-		}
-	}
-}
+}	

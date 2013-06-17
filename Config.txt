@@ -1,0 +1,4 @@
+dbIp = abe
+dbPort = aabe
+dbNavn  = abe
+serverIp = abe

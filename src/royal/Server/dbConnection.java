@@ -6,59 +6,66 @@ package royal.Server;
 import java.sql.*;
 
 /**
- *
+ * Serverens database managemen med adgang til brugernavn og kodeord så den kan give svar tilbage til en klient om den er logget ind, ellers bliver der ikke åbnet for socket
  * @author root
  */
 public class dbConnection{
-    private static Connection conn;
-    private static int userId = 0;
+    private static Connection forbindelse;
+    private static int brugerId = 0;
     private boolean authenticated = false;
     
 
 
     /**
-     *
+     * instans af dbconnection
      */
     public dbConnection() {
     }
     
 
-    private Connection con(){    
-        Connection conn = null;
+    private Connection forbindelse(){    
+        Connection forbindelse = null;
         String url = "jdbc:mysql://localhost:3306/";
         String dbName = "Royal";
         String driver = "com.mysql.jdbc.Driver";
         String userName = "root"; 
-        String password = "djkolort";
+        String password = "toor";
         try {
         Class.forName(driver).newInstance();
-        conn = DriverManager.getConnection(url+dbName,userName,password);
+        forbindelse = DriverManager.getConnection(url+dbName,userName,password);
   
 
-        this.conn = conn;
+        this.forbindelse = forbindelse;
 
         } catch (Exception e) {
         e.printStackTrace();
         } 
-        return conn;
+        return forbindelse;
     }
     
-    public boolean getState(String username, String pw) throws SQLException{
-        validate(username,pw);
+    /**
+     *
+     * @param brugerNavn - brugernavn der skal bruges
+     * @param kodeord - kodeord som skal valideres
+     * @return retunere om brugeren har tilladelse til at logge ind, true/false
+     * @throws SQLException
+     */
+    public boolean getState(String brugerNavn, String kodeord) throws SQLException{
+        Valider(brugerNavn,kodeord);
         return authenticated;
     }
     /**
      * 
-     * @param username
-     * @param pw 
+     * @param brugerNavn - brugernavn som skal valideres
+     * @param kodeord kodeord som skal valideres
      * @throws SQLException authenthicated
      */
-    public void validate(String username, String pw) throws SQLException{
-       boolean go = false;
-        go = validateUsername(username);
+    public void Valider(String brugerNavn, String kodeord) throws SQLException{
+       boolean brugerNavnStatus = false;
+        brugerNavnStatus = validerBrugernavn(brugerNavn);
        boolean pwd = false;
-        pwd = validatePassword(pw);
-       if(go != true )authenticated = false;
+        pwd = validerKodeord(kodeord);
+       if(brugerNavnStatus != true )authenticated = false;
        else {
             if(pwd != false){
             authenticated = true;
@@ -71,71 +78,61 @@ public class dbConnection{
     
     /**
      * 
-     * @param username
-     * @return
+     * @param brugerNavn - brugernavnet som skal testes om eksistere i databasen
+     * @return retunere true hvis brugernavnet eksistere
      * @throws SQLException 
      */
-    private boolean validateUsername(String username) throws SQLException{
-        boolean userNamevalidated = false;
-         Statement st = conn.createStatement();
+    private boolean validerBrugernavn(String brugerNavn) throws SQLException{
+        boolean brugerNavnValideret = false;
+         Statement st = forbindelse.createStatement();
          ResultSet res;
-        res = st.executeQuery("SELECT * FROM  Users WHERE username ='" + username+"'");
+        res = st.executeQuery("SELECT * FROM  Users WHERE username ='" + brugerNavn+"'");
             while (res.next()) {
-            userId = res.getInt("idUser");
+            brugerId = res.getInt("idUser");
             String s = res.getString("username");
-            if(s.equals(username)){
-               userNamevalidated = true;
+            if(s.equals(brugerNavn)){
+               brugerNavnValideret = true;
             }
         }
   
-        return userNamevalidated;
+        return brugerNavnValideret;
     }
-    private boolean validatePassword(String password) throws SQLException{
-        boolean truepw = false;
-        String tempPwd = null;
-        Statement st = conn.createStatement();
+    private boolean validerKodeord(String kodeord) throws SQLException{
+        boolean godkendtKodeord = false;
+        String midlertidigKodeord = null;
+        Statement st = forbindelse.createStatement();
         ResultSet res;
-              res = st.executeQuery("SELECT * FROM words WHERE idUser ='"+userId+"'");
+              res = st.executeQuery("SELECT * FROM words WHERE idUser ='"+brugerId+"'");
         while(res.next()){
-              tempPwd  = res.getString("pwd");
+              midlertidigKodeord  = res.getString("pwd");
         }
 
-        if(password.equals(tempPwd)){
-            truepw = true;
-            return truepw;
+        if(kodeord.equals(midlertidigKodeord)){
+            godkendtKodeord = true;
+            return godkendtKodeord;
         }
         else{
-            return truepw;
+            return godkendtKodeord;
         }
     }
-    private String[] returnCredentials(String username){
+    private String[] returnerRettigheder(String username){
         String[] credentials = new String[2];
         credentials[0] = username;
         return credentials;
     }
     /**
      *
-     * @param userName
-     * @return
+     * @return retunere en forbindelse til databasen
      */
-    public Connection connect(){
-        Connection conn = con();
-        return conn;
+    public Connection fobind(){
+        Connection forbindelse = forbindelse();
+        return forbindelse;
     }
 
     /**
      *
      * @param userName
      */
-    public dbConnection(String userName) {
-         
-    }
 
-    /**
-     *
-     */
-    public void validate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
 }
